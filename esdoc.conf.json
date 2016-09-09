@@ -1,0 +1,9 @@
+{
+    "source": "./src",
+    "destination": "./esdoc",
+    "test": {
+        "type": "mocha",
+        "source": "./test",
+        "includes": ["\\.js"]
+    }
+}

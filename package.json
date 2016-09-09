@@ -1,0 +1,42 @@
+{
+  "name": "eliot",
+  "version": "0.0.1",
+  "description": "Eliot for Javascript.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "test": "mocha --require babel-register test",
+    "test-watch": "mocha --watch --require babel-register test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonathanj/eliot.js.git"
+  },
+  "keywords": [
+    "logging",
+    "eliot"
+  ],
+  "author": "Jonathan Jacobs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonathanj/eliot.js/issues"
+  },
+  "homepage": "https://github.com/jonathanj/eliot.js#readme",
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-register": "^6.11.6",
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
+  },
+  "dependencies": {
+    "error-stack-parser": "^1.3.6",
+    "es6-error": "^3.0.1",
+    "immutable": "^3.8.1",
+    "type-name": "^2.0.2",
+    "uuid": "^2.0.2"
+  }
+}
