@@ -19,8 +19,8 @@ const COMPLETED_STATUSES = [FAILED_STATUS, SUCCEEDED_STATUS]
 /**
  * Assert that a message dictionary contains a subset of fields.
  *
- * @param {object<string,*>} message Message to be checked.
- * @param {object<string,*>} fields Subset of fields that are expected to match.
+ * @param {MessageDictionary} message Message to be checked.
+ * @param {MessageDictionary} fields Subset of fields that are expected to match.
  */
 export function assertContainsFields(message, fields) {
     const subset = {}
@@ -33,7 +33,21 @@ export function assertContainsFields(message, fields) {
 }
 
 
+/**
+ * An action whose start and finish messages have been logged.
+ */
 export class LoggedAction {
+    /**
+     * Create a `LoggedAction` from a task UUID, task level and an array of
+     * message dictionaries.
+     *
+     * @param {string} uuid Task UUID.
+     * @param {string} level Task level of the start message.
+     * @param {MessageDictionary[]} messages Message dictionaries.
+     * @throws {Error} If either the start or end message could not be found.
+     * @return {LoggedAction} Logged action constructed from the start and
+     * finish messages for the specific action.
+     */
     static fromMessages(uuid, level, messages) {
         let startMessage = null,
             endMessage = null,
@@ -68,6 +82,13 @@ export class LoggedAction {
         return new LoggedAction(startMessage, endMessage, children)
     }
 
+    /**
+     * Find all `LoggedAction`s of the specified type.
+     *
+     * @param {MessageDictionary[]} messages Message dictionaries.
+     * @param {string} actionType Action type name.
+     * @return {LoggedAction[]} Array of logged actions for the specified type.
+     */
     static ofType(messages, actionType) {
         const result = []
         for (const message of messages) {
@@ -83,12 +104,31 @@ export class LoggedAction {
     }
 
     constructor(startMessage, endMessage, children) {
+        /**
+         * Start message contents.
+         * @type {MessageDictionary}
+         */
         this.startMessage = startMessage
+        /**
+         * End message contents.
+         * @type {MessageDictionary}
+         */
         this.endMessage = endMessage
+        /**
+         * Direct children.
+         * @type {LoggedMessage[]}
+         */
         this.children = children
     }
 
     // XXX: Maybe we can make this a generator?
+    /**
+     * Find all descendant `LoggedAction` or `LoggedMessage` of this logged
+     * action.
+     *
+     * @return {LoggedAction[]|LoggedMessage[]} All descendent logged actions
+     * or messages.
+     */
     descendants() {
         const result = []
         for (const child of this.children) {
@@ -102,13 +142,28 @@ export class LoggedAction {
         return result
     }
 
+    /**
+     * Did this action succeed?
+     *
+     * @return {boolean} Did this action succeed?
+     */
     succeeded() {
         return this.endMessage[ACTION_STATUS_FIELD] === SUCCEEDED_STATUS
     }
 }
 
 
+/**
+ * A message that has been logged.
+ */
 export class LoggedMessage {
+    /**
+     * Find all `LoggedMessage`s of a type.
+     *
+     * @param {MessageDictionary[]} messages Array of messages.
+     * @param {string} messageType Message type name.
+     * @return {LoggedMessage[]} Logged messages for the specified type.
+     */
     static ofType(messages, messageType) {
         const result = []
         for (const message of messages) {
@@ -120,6 +175,10 @@ export class LoggedMessage {
     }
 
     constructor(message) {
+        /**
+         * Message contents.
+         * @type {MessageDictionary}
+         */
         this.message = message
     }
 }
@@ -182,7 +241,7 @@ export function captureLogging(self, assertion=null, ...assertionArgs) {
  *
  * @param {Logger|MemoryLogger} logger Logger to check for messages.
  * @param {MessageType} messageType Message type to find.
- * @param {object<string,*>} [fields={}] Fields that must match a subset of
+ * @param {MessageDictionary} [fields={}] Fields that must match a subset of
  * those found in the first matching message.
  * @return {LoggedMessage} The first matching logged message.
  */
@@ -204,9 +263,9 @@ export function assertHasMessage(logger, messageType, fields={}) {
  * @param {ActionType} actionType Action type to find.
  * @param {object<string,*>} opt Assertion options
  * @param {boolean} [opt.succeeded=true] Expected success status of the action.
- * @param {object<string,*>} [opt.startFields={}] Fields that must match a
+ * @param {MessageDictionary} [opt.startFields={}] Fields that must match a
  * subset of those found in the start message of the first matching action.
- * @param {object<string,*>} [opt.endFields={}] Fields that must match a subset
+ * @param {MessageDictionary} [opt.endFields={}] Fields that must match a subset
  * of those found in the end message of the first matching action.
  * @return {LoggedAction} The first matching logged message.
  */

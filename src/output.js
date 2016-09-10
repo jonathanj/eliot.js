@@ -89,13 +89,36 @@ export function addDestination(...args) {
 
 
 /**
+ * @interface
+ */
+export class ILogger {
+    /**
+     * Write a message dictionary to the appropriate destination(s).
+     *
+     * @abstract
+     * @param {MessageDictionary} dict Message dictionary to write, this value
+     * will not be mutated.
+     * @param {?_MessageSerializer} [serializer] Message serializer.
+     */
+    write(dict, serializer=null) {}
+}
+
+
+/**
  * Write out messages to the globally configured destination(s).
+ * @implements {ILogger}
  */
 export class Logger {
     constructor(destinations=_destinations) {
         this._destinations = _destinations
     }
 
+    /**
+     * Serialize a message dictionary and write it to the destination(s).
+     *
+     * @param {MessageDictionary} dict Message dictionary.
+     * @param {?_MessageSerializer} [serializer] Message serializer.
+     */
     write(dict, serializer=null) {
         dict = Object.assign({}, dict)
         try {
@@ -140,14 +163,27 @@ export class Logger {
     }
 }
 
+
 export const _DEFAULT_LOGGER = new Logger()
 
 
+/**
+ * Store written messages in memory.
+ *
+ * This implementation is convenient for unit tests however it is advised to use
+ * {@link captureLogging} rather than instantiate a `MemoryLogger` manually.
+ */
 export class MemoryLogger {
     constructor() {
         this.reset()
     }
 
+    /**
+     * Flush all logged tracebacks of a specific error type.
+     *
+     * @param {*} errorType Type whose instances will be flushed.
+     * @return {MessageDictionary[]} Flushed messages.
+     */
     flushTracebacks(errorType) {
         const result = [],
               remaining = []
@@ -170,6 +206,11 @@ export class MemoryLogger {
         }
     }
 
+    /**
+     * Validate all written messages.
+     *
+     * @throws {ValidationError} If a serializer was given and validation failed.
+     */
     validate() {
         const n = Math.min(this.messages.length, this.serializers.length)
         for (let i = 0; i < n; ++i) {
@@ -182,6 +223,11 @@ export class MemoryLogger {
         }
     }
 
+    /**
+     * Serialize all written messages.
+     *
+     * @return {MessageDictionary[]} Serialized messages.
+     */
     serialize() {
         const n = Math.min(this.messages.length, this.serializers.length),
               result = []
@@ -194,6 +240,12 @@ export class MemoryLogger {
         return result
     }
 
+    /**
+     * Clear all logged messages.
+     *
+     * Logged tracebacks will also be cleared and thus will not cause any test
+     * failures.
+     */
     reset() {
         this.messages = []
         this.serializers = []

@@ -14,18 +14,25 @@ export const TRACEBACK_MESSAGE = MessageType(
 TRACEBACK_MESSAGE._serializer.allowAdditionalFields = true
 
 
-function writeTracebackMessage(logger, exc) {
+function writeTracebackMessage(logger, error) {
     let msg = TRACEBACK_MESSAGE({
-        reason: exc,
-        traceback: ErrorStackParser.parse(exc).map(
+        reason: error,
+        traceback: ErrorStackParser.parse(error).map(
             f => f.toString()).join('\n'),
-        exception: exc.name})
-    // Registering custom exception info extractor is not supported yet.
+        exception: error.name})
+    // XXX: Registering custom exception info extractor is not supported yet.
     //msg = msg.bind(XXX)
     msg.write(logger)
 }
 
 
-export function writeTraceback(exc, logger) {
-    writeTracebackMessage(logger, exc)
+/**
+ * Write a traceback to the log.
+ *
+ * @param {Error} error Error whose traceback will be loged.
+ * @param {?ILogger} [logger] Optional logger to write to, if not provided the
+ * default logger will be used.
+ */
+export function writeTraceback(error, logger=null) {
+    writeTracebackMessage(logger, error)
 }

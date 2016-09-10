@@ -188,7 +188,7 @@ export class Action {
      * The action identification fields and any additional fields will be
      * logged.
      *
-     * @param {object<string,*>} fields Fields being logged.
+     * @param {MessageDictionary} fields Fields being logged.
      */
     _start(fields) {
         fields[ACTION_STATUS_FIELD] = STARTED_STATUS
@@ -311,7 +311,7 @@ export function startAction(logger=null, actionType='', fields={},
  *
  * @param {?Logger} logger Logger to write messages to.
  * @param {string} actionType Type of action.
- * @param {object.<string,*>} fields Additional fields to add to the start
+ * @param {MessageDictionary} fields Additional fields to add to the start
  * message.
  * @param {?_ActionSerializers} _serializers Action serializers.
  * @return {Action} New action.
@@ -338,9 +338,9 @@ export function startTask(logger=null, actionType='', fields={},
  * })
  *
  * @param {Action} action Action to use.
- * @param {function(action: Action): *} f Function called with a single
- * `Action` argument.
- * @param {...object} args Additional arguments to pass to `f`.
+ * @param {function(action: Action): *} f Function called with a single `Action`
+ * argument.
+ * @param {...*} args Additional arguments to pass to `f`.
  * @return {*} Result of `f`.
  */
 export function withAction(action, f, ...args) {

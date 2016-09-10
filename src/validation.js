@@ -307,7 +307,7 @@ export class _MessageSerializer {
     /**
      * Serialize a message in-place, converting inputs to outputs.
      *
-     * @param {object<string,*>} message Message dictionary.
+     * @param {MessageDictionary} message Message dictionary.
      */
     serialize(message) {
         for (const [key, field] of this.fields.entries()) {
@@ -318,7 +318,7 @@ export class _MessageSerializer {
     /**
      * Validate a message dictionary.
      *
-     * @param {object<string,*>} message Message dictionary.
+     * @param {MessageDictionary} message Message dictionary.
      * @throws {ValidationError} If the message has the wrong fields or one of
      * the fields fail validation.
      */
@@ -360,7 +360,7 @@ export class _MessageSerializer {
  * @param {BoundField[]} fields Array of fields which can appear in this message
  * type.
  * @param {string} [description] Optional description of this message type.
- * @return {function(fields: object<string,*>): Message} Message factory for
+ * @return {function(fields: MessageDictionary): Message} Message factory for
  * this type.
  * @property {string} messageType Name of the type.
  * @property {string} description Description of this message type.
@@ -382,6 +382,8 @@ export function MessageType(messageType, fields, description='') {
 
 
 /**
+ * Collection of serializers for the various action states.
+ *
  * @typedef {object} _ActionSerializers
  * @property {_MessageSerializer} start Serializer for action start messages.
  * @property {_MessageSerializer} success Serializer for action success
@@ -392,7 +394,9 @@ export function MessageType(messageType, fields, description='') {
 
 
 /**
- * @typedef {function(fields: object<string,*>, logger: ?Logger): Action}
+ * {@link ActionType} result.
+ *
+ * @typedef {function(fields: MessageDictionary, logger: ?Logger): Action}
  * ActionTypeCallable
  */
 
