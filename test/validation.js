@@ -215,6 +215,7 @@ describe('fields', function() {
 })
 
 
+/** @test {_MessageSerializer} */
 describe('_MessageSerializer', function() {
     it('throws if constructed with more than one object per field name', function() {
         const e = assert.throws(
@@ -281,6 +282,7 @@ describe('_MessageSerializer', function() {
     })
 
     describe('#serialize', function() {
+        /** @test {_MessageSerializer#serialize} */
         it('serializes all values in a dictionary using the defined fields', function() {
             const serializer = new _MessageSerializer(
                 [BoundField.forValue('message_type', 'mymessage', 'The type'),
@@ -294,6 +296,7 @@ describe('_MessageSerializer', function() {
                  length: 8})
         })
 
+        /** @test {_MessageSerializer#serialize} */
         it('leaves unknown fields unchanged', function() {
             const serializer = new _MessageSerializer(
                 [BoundField.forValue('message_type', 'mymessage', 'The type'),
@@ -312,6 +315,7 @@ describe('_MessageSerializer', function() {
 })
 
 
+/** @test {MessageType} */
 describe('MessageType', function() {
     const messageType = () => MessageType(
         'myapp:mysystem',
@@ -320,6 +324,7 @@ describe('MessageType', function() {
         'A message type')
 
     describe('#validate', function() {
+        /** @test {MessageType#validate} */
         it('throws if the dictionary has no `message_type`', function() {
             const mtype = messageType(),
                   e = assert.throws(
@@ -327,6 +332,7 @@ describe('MessageType', function() {
             assert.include(e.message, 'message_type is missing')
         })
 
+        /** @test {MessageType#validate} */
         it('throws if the dictionary has the wrong `message_type`', function() {
             const mtype = messageType(),
                   e = assert.throws(
@@ -337,6 +343,7 @@ describe('MessageType', function() {
             assert.include(e.message, 'Field must be myapp:mysystem')
         })
 
+        /** @test {MessageType#validate} */
         it('throws if the dictionary has an unknown field', function() {
             const mtype = messageType(),
                   e = assert.throws(
@@ -348,6 +355,7 @@ describe('MessageType', function() {
             assert.include(e.message, 'Unexpected field: extra')
         })
 
+        /** @test {MessageType#validate} */
         it('throws if one of the fields fails validation', function() {
             const mtype = messageType(),
                   e = assert.throws(
@@ -358,6 +366,7 @@ describe('MessageType', function() {
             assert.include(e.message, 'to be one of: number')
         })
 
+        /** @test {MessageType#validate} */
         it('does not throw if the dictionary has any standard fields', function() {
             const mtype = messageType()
             mtype._serializer.validate(
@@ -371,12 +380,14 @@ describe('MessageType', function() {
     })
 
     describe('calling it', function() {
+        /** @test {MessageType#call} */
         it('creates a new Message with the inherited serializer', function() {
             const mtype = messageType(),
                   msg = mtype()
             assert.strictEqual(mtype._serializer, msg._serializer)
         })
 
+        /** @test {MessageType#call} */
         it('creates a new Message with the given fields', function() {
             const mtype = messageType(),
                   msg = mtype({key: 2, value: 3})
@@ -396,9 +407,33 @@ describe('MessageType', function() {
         const mtype = MessageType('name', [])
         assert.strictEqual(mtype.description, '')
     })
+
+    describe('end-to-end', function() {
+        const MESSAGE = MessageType(
+            'myapp:mymessage',
+            [BoundField.forTypes('key', ['number'], 'The key')],
+            'A message for testing')
+
+        it('correct messages are logged', function() {
+            const logger = new MemoryLogger(),
+                  msg = MESSAGE().bind({key: 123})
+            msg.write(logger)
+            assert.strictEqual(logger.messages[0].key, 123)
+        })
+
+        it('incorrect messages throw', function() {
+            const logger = new MemoryLogger(),
+                  msg = MESSAGE().bind({key: 'nope'})
+            msg.write(logger)
+            assert.throws(
+                () => logger.validate(),
+                ValidationError)
+        })
+    })
 })
 
 
+/** @test {ActionType} */
 describe('ActionType', function() {
     const actionType = () => ActionType(
         'myapp:mysystem:myaction',
@@ -408,6 +443,7 @@ describe('ActionType', function() {
 
     function commonActionTypeTests(validMessage, serializer) {
         describe('#validate', function() {
+            /** @test {ActionType#validate} */
             it('throws if the dictionary has no `action_type`', function() {
                 const atype = actionType(),
                       msg = validMessage()
@@ -417,6 +453,7 @@ describe('ActionType', function() {
                 assert.include(e.message, 'action_type is missing')
             })
 
+            /** @test {ActionType#validate} */
             it('throws if the dictionary has the wrong `action_type`', function() {
                 const atype = actionType(),
                       msg = validMessage()
@@ -426,6 +463,7 @@ describe('ActionType', function() {
                 assert.include(e.message, 'must be myapp:mysystem:myaction')
             })
 
+            /** @test {ActionType#validate} */
             it('throws if the dictionary is missing a field', function() {
                 const atype = actionType(),
                       msg = validMessage()
@@ -442,6 +480,7 @@ describe('ActionType', function() {
                 assert.include(e.message, `${removed} is missing`)
             })
 
+            /** @test {ActionType#validate} */
             it('throws if one of the fields fails validation', function() {
                 const atype = actionType(),
                       msg = validMessage()
@@ -458,6 +497,7 @@ describe('ActionType', function() {
                 assert.include(e.message, `${removed}: `)
             })
 
+            /** @test {ActionType#validate} */
             it('does not throw if the dictionary includes standard fields', function() {
                 const atype = actionType(),
                       msg = Object.assign(validMessage(), {task_level: '/',
