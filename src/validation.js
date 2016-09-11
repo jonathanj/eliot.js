@@ -415,7 +415,7 @@ export function MessageType(messageType, fields, description='') {
  *         'Do something with a key, resulting in a value.')
  * function doSomething(key) {
  *   withAction(LOG_DOSOMETHING({key}), action => {
- *     const result = doSomething(key)
+ *     const result = doTheThing(key)
  *     action.addSuccessFields({result})
  *     return result
  *   })
