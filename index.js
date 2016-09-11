@@ -28,6 +28,7 @@ const {
     BoundField,
     Field,
     fields,
+    MessageType,
     ValidationError
 } = require('./lib/validation')
 
@@ -69,6 +70,7 @@ module.exports = {
     BoundField,
     Field,
     fields,
+    MessageType,
     ValidationError,
 
     testing
