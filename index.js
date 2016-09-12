@@ -32,23 +32,8 @@ const {
     ValidationError
 } = require('./lib/validation')
 
-const {
-    assertContainsFields,
-    assertHasAction,
-    assertHasMessage,
-    captureLogging,
-    LoggedAction,
-    LoggedMessage
-} = require('./lib/testing')
-
-const testing = {
-    assertContainsFields,
-    assertHasAction,
-    assertHasMessage,
-    captureLogging,
-    LoggedAction,
-    LoggedMessage
-}
+const testing = require('./lib/testing'),
+      destinations = require('./lib/destinations')
 
 module.exports = {
     Action,
@@ -73,5 +58,6 @@ module.exports = {
     MessageType,
     ValidationError,
 
-    testing
+    testing,
+    destinations
 }
